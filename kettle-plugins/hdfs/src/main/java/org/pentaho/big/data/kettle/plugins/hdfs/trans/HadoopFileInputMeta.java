@@ -2,7 +2,7 @@
  *
  * Pentaho Big Data
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import org.pentaho.big.data.api.cluster.NamedClusterService;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -65,6 +66,14 @@ public class HadoopFileInputMeta extends TextFileInputMeta {
   private final RuntimeTestActionService runtimeTestActionService;
   private final RuntimeTester runtimeTester;
 
+  /** The environment of the selected file/folder */
+  @Injection( name = "ENVIRONMENT", group = "FILENAME_LINES" )
+  public String[] environment = {};
+
+  public HadoopFileInputMeta() {
+    this( null, null, null );
+  }
+
   public HadoopFileInputMeta( NamedClusterService namedClusterService,
                               RuntimeTestActionService runtimeTestActionService, RuntimeTester runtimeTester ) {
     this.namedClusterService = namedClusterService;
@@ -86,7 +95,7 @@ public class HadoopFileInputMeta extends TextFileInputMeta {
     retVal.append( "          " ).append( XMLHandler.addTagValue( SOURCE_CONFIGURATION_NAME, namedCluster ) );
   }
 
-  // Receiving metaStore because RepositoryProxy.getMetaStore() returns a hard-coded null 
+  // Receiving metaStore because RepositoryProxy.getMetaStore() returns a hard-coded null
   protected String loadSourceRep( Repository rep, ObjectId id_step, int i, IMetaStore metaStore )
     throws KettleException {
     String source_filefolder = rep.getStepAttributeString( id_step, i, "file_name" );
